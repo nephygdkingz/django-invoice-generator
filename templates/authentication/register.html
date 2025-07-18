@@ -1,0 +1,40 @@
+{% extends "main/base.html" %}
+{% block content %}
+<div class="row justify-content-center align-items-center py-5">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title text-center">Create an Account</h2>
+        <p class="card-text text-center">Please fill in the form below to register.</p>
+        <hr>
+        {% include "../includes/form_errors.html" with form=form %}
+        <form method="post" class="spinner-form">
+          {% csrf_token %}
+
+          {% for field in form %}
+            <div class="mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              <!-- {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+              {% endif %} -->
+              {% if field.errors %}
+                <div class="text-danger">
+                  {% for error in field.errors %}
+                    <div>{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          
+          <button type="submit" class="btn btn-primary w-100 spinner-button d-flex align-items-center justify-content-center mt-3">
+            <span class="btn-text">Submit</span>
+            <span class="btn-spinner spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display: none;"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

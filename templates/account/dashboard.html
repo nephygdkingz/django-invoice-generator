@@ -1,0 +1,12 @@
+{% extends "main/base.html" %}
+{% block content %}
+<div class="row pt-5 pb-3">
+    <div class="col-md-12">
+        <h2>Welcome to Your Dashboard</h2>
+        <p>You are logged in as <strong>{{ request.user.username }}</strong></p>
+        <p class="text-muted">Here you can manage your invoices, view your account details, and more.</p>
+        <hr>
+    </div>
+</div>
+
+{% endblock %}
