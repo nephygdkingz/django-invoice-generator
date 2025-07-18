@@ -6,7 +6,8 @@
       <div class="card-body">
         <h2 class="card-title text-center">Welcome Back!</h2>
         <p class="card-text text-center">Please enter your credentials to log in.</p>
-        {% include "../includes/messages.html" %}
+        <!-- {% include "../includes/messages.html" %} -->
+        {% include "../includes/form_errors.html" with form=form %}
         <hr>
         <form method="post" class="spinner-form" novalidate>
           {% csrf_token %}
