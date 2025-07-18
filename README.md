@@ -1,67 +1,28 @@
-# Django Invoice Generator 🧾
+# Step 2: Setup User Authentication
 
-A Django-powered invoice generator with PDF export, user auth, and DevOps integration. Built step-by-step as a side project and tutorial.
+This branch adds user authentication to the Django Invoice Generator.
 
-## 🚀 About the Project
+## ✅ What Was Done
 
-This is a step-by-step tutorial series to build a web app that:
+- Created the `invoices` app
+- Set up login, register, and logout views
+- Protected the dashboard with `@login_required`
+- Added Bootstrap-based templates
 
-- Uploads CSV/Excel files
-- Generates branded PDF invoices
-- Allows download/email
-- Uses Docker, CI/CD, and cloud deployment
-- Has monetization potential
+## 🧪 How to Run
 
-## 🧩 Tutorial Series
+1. Activate virtual environment
+2. Run migrations:
 
-Each step of the project is tracked as a separate Git branch. You can follow along step-by-step by checking out each branch.
+   ```bash
+   python manage.py migrate
+   ```
 
-### 📚 Tutorial Branches
-
-| Step   | Branch Name            | Description          |
-| ------ | ---------------------- | -------------------- |
-| Step 1 | `step-1-project-setup` | Setup Django project |
-
-## 📦 Tech Stack
-
-- **Backend:** Django
-- **Frontend:** HTML/CSS + Bootstrap
-- **PDF:** WeasyPrint
-- **DevOps:** Docker, GitHub Actions, Cloud Deployment
-
-## 🧪 How to Use Step Branches
-
-```bash
-# Clone the repo
-git clone https://github.com/your-username/django-invoice-generator.git
-cd django-invoice-generator
-
-# Checkout a specific step
-git checkout step-1-project-setup
-```
-
-How to Run Locally
-
-1. Clone the repo:
-2. Create and activate a virtual environment:
-
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/macOS
-venv\Scripts\activate     # Windows
-```
-
-3. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-4. Run the server:
-
-```bash
-python manage.py runserver
-```
-
-Want to Follow the Tutorial?
-Check out the full tutorial series on YouTube or the blog post ().
+3. Run the server:
+   ```bash
+   python manage.py runserver
+   ```
+4. Visit:
+   http://127.0.0.1:8000/login/
+   http://127.0.0.1:8000/register/
+   http://127.0.0.1:8000/dashboard/
