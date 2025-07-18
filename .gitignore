@@ -1,0 +1,23 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+.DS_Store
+*.log
+*.pot
+*.mo
+*.po
+/manage.py
+/invoice_generator/invoice_generator/local_settings.py
+
+# Virtual Environment
+venv/
+env/
+*.env
+
+# Django
+/static_root/
+/media_root/
