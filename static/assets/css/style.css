@@ -39,3 +39,15 @@
   font-size: 16px;
 }
 /* navbar section end */
+
+/* handling bootsrap form customization */
+.form-control {
+  border-color: rgba(146, 185, 2, 0.5);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-control:focus {
+  border-color: var(--solid_main_color);
+  box-shadow: 0 0 0 0.2rem rgba(10, 8, 99, 0.25);
+  outline: none;
+}

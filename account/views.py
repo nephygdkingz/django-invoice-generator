@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+from .forms import CustomLoginForm
 
 def register_view(request):
     if request.method == 'POST':
@@ -16,13 +19,17 @@ def register_view(request):
 
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
+        form = CustomLoginForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             return redirect('account:dashboard')
+        else:
+            # Add error message when authentication fails
+            messages.error(request, "Invalid username or password. Please check and try again.")
     else:
-        form = AuthenticationForm()
+        form = CustomLoginForm()
+    
     return render(request, 'authentication/login.html', {'form': form})
 
 def logout_view(request):
