@@ -1,0 +1,26 @@
+{% extends "main/base.html" %}
+{% block content %}
+<h2>Invoice Preview</h2>
+<p>Here is the data from your file:</p>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      {% for key in data.0.keys %}
+        <th>{{ key }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in data %}
+      <tr>
+        {% for value in row.values %}
+          <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{% url 'invoices:upload' %}" class="btn btn-secondary">Upload Another File</a>
+{% endblock %}
