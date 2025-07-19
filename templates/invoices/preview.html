@@ -1,0 +1,35 @@
+{% extends "main/base.html" %}
+{% block content %}
+<div class="row justify-content-center align-items-center py-5">
+  <div class="col-md-10 col-12">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title">Invoice Data Preview</h2>
+        <p class="card-text">Please review the data below before proceeding.</p>
+
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              {% for key in data.0.keys %}
+                <th>{{ key }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data %}
+              <tr>
+                {% for value in row.values %}
+                  <td>{{ value }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <hr>
+        <a href="{% url 'invoices:upload' %}" class="btn btn-secondary btn-sm w-50">Upload Another File</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
