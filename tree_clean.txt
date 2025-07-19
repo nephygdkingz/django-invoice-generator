@@ -54,6 +54,7 @@ invoice_generator/
 │   │   ├── form_errors.html
 │   │   └── messages.html
 │   ├── invoices/
+│   │   ├── invoice_template.html
 │   │   ├── preview.html
 │   │   └── upload.html
 │   └── main/

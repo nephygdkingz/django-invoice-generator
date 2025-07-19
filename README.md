@@ -1,14 +1,24 @@
-# Step 3: Upload and Process CSV/Excel Files
+# Step 4: Generate PDF Invoices
 
-This branch adds CSV and Excel file upload functionality to the Django Invoice Generator.
+This branch adds PDF generation functionality to the Django Invoice Generator.
 
 ## ✅ What Was Done
 
-- Created upload form for CSV/Excel files
-- Used `pandas` to parse file contents
-- Added file validation
-- Displayed parsed invoice data in a table
-- Used Django sessions to pass data between views
+- Created HTML invoice template
+- Used `xhtml2pdf` to generate PDFs (Windows-friendly alternative to `weasyprint`)
+- Added "Download PDF" button
+- Styled invoice with CSS
+- Passed invoice data from session to template
+
+> 💡 Note: We're using `xhtml2pdf` for now because `weasyprint` requires native libraries that aren't available on Windows. We'll switch back to `weasyprint` in Step 5 when we dockerize the app.
+
+## 🧪 How to Run
+
+1. Activate virtual environment
+2. Run migrations:
+   ```bash
+   python manage.py migrate
+   ```
 
 ## 🧪 How to Run
 
@@ -27,6 +37,7 @@ This branch adds CSV and Excel file upload functionality to the Django Invoice G
    [http://127.0.0.1:8000/upload/](http://127.0.0.1:8000/upload/)
    - Upload a CSV or Excel file
    - Preview the parsed invoice data
+   - Click "Download PDF"
 
 ## 📁 Project Structure
 
@@ -87,6 +98,7 @@ invoice_generator/
 │   │   ├── form_errors.html
 │   │   └── messages.html
 │   ├── invoices/
+│   │   ├── invoice_template.html
 │   │   ├── preview.html
 │   │   └── upload.html
 │   └── main/
