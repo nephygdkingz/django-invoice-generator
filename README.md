@@ -1,12 +1,16 @@
-# Step 4: Generate PDF Invoices
+# Step 4: Generate PDF Invoices with Totals & Tax
 
-This branch adds PDF generation functionality to the Django Invoice Generator.
+This branch adds PDF generation and invoice calculations to the Django Invoice Generator.
 
 ## ✅ What Was Done
 
 - Created HTML invoice template
 - Used `xhtml2pdf` to generate PDFs (Windows-friendly alternative to `weasyprint`)
-- Added "Download PDF" button
+- Added **invoice totals calculation**:
+  - Subtotal = Quantity × Unit Price
+  - Tax Amount = (tax_rate / 100) \* Subtotal
+  - Total = Subtotal + Tax
+- Displayed **grand total** in preview and PDF
 - Styled invoice with CSS
 - Passed invoice data from session to template
 
@@ -38,6 +42,8 @@ This branch adds PDF generation functionality to the Django Invoice Generator.
    - Upload a CSV or Excel file
    - Preview the parsed invoice data
    - Click "Download PDF"
+
+<!-- You can take the csv sample file in root folder named test_invoice.csv to test it-->
 
 ## 📁 Project Structure
 
@@ -99,11 +105,14 @@ invoice_generator/
 │   │   └── messages.html
 │   ├── invoices/
 │   │   ├── invoice_template.html
+│   │   ├── invoice_template_pdf.html
+│   │   ├── new_invoice_template.html
 │   │   ├── preview.html
 │   │   └── upload.html
 │   └── main/
 │       ├── base.html
 │       └── navbar.html
+├── test_invoice.csv
 ├── tree_clean.txt
 └── update_readme.py
 ```

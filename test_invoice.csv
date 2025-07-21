@@ -1,5 +1,5 @@
-description,quantity,unit_price,tax
-Widget A,2,10.00,0.10
-Widget B,1,25.00,0.10
-Service Fee,1,50.00,0.10
-Extra Feature,3,15.00,0.10
+description,quantity,unit_price
+Widget A,2,10.00
+Widget B,1,25.00
+Service Fee,1,50.00
+Extra Feature,3,15.00

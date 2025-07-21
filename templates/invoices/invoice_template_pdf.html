@@ -147,7 +147,7 @@
   <table class="totals">
     <tr>
       <td><strong>Subtotal:</strong></td>
-      <td>${{ sub_total|floatformat:2 }}</td>
+      <td>${{ grand_total|floatformat:2 }}</td>
     </tr>
     <tr>
       <td><strong>Tax ({{ tax_rate }}%):</strong></td>
@@ -155,7 +155,7 @@
     </tr>
     <tr>
       <td><strong>Total Due:</strong></td>
-      <td><strong>${{ grand_total|floatformat:2 }}</strong></td>
+      <td><strong>${{ total_due|floatformat:2 }}</strong></td>
     </tr>
   </table>
 
