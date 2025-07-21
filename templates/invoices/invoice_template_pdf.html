@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      margin: 0;
+      padding: 0;
+      color: #000;
+    }
+
+    .invoice-container {
+      width: 100%;
+      padding: 20px;
+    }
+
+    .header-table {
+      border-bottom: 2px solid #333;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .header-table td {
+      vertical-align: top;
+    }
+
+    .logo {
+      max-height: 60px;
+    }
+
+    .invoice-title {
+      font-size: 16px;
+      text-align: right;
+    }
+
+    .invoice-details {
+      margin-bottom: 20px;
+    }
+
+    table.invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      page-break-inside: auto;
+    }
+
+    table.invoice-table th,
+    table.invoice-table td {
+      border: 1px solid #ddd;
+      padding: 6px;
+      text-align: left;
+    }
+
+    table.invoice-table th {
+      background-color: #f0f0f0;
+    }
+
+    table.totals {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    table.totals td {
+      padding: 5px;
+      border: none;
+      text-align: right;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 10px;
+      border-top: 1px solid #ccc;
+      margin-top: 30px;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header for all pages -->
+<pdf:header>
+  <table width="100%">
+    <tr>
+      <td style="text-align: left; font-size: 10px;">
+        {{ invoice_info.company }} | {{ invoice_info.company_email }}
+      </td>
+      <td style="text-align: right; font-size: 10px;">
+        Invoice #: {{ invoice_info.invoice_number }}
+      </td>
+    </tr>
+  </table>
+</pdf:header>
+
+<!-- Footer for all pages -->
+<pdf:footer>
+  <div style="text-align: center; font-size: 10px;">
+    Page <pdf:pagenumber /> of <pdf:pagecount />
+  </div>
+</pdf:footer>
+
+<div class="invoice-container">
+  <table class="header-table">
+    <tr>
+      <td width="50%">
+        <img src="{{ logo_url }}" alt="Company Logo" class="logo" />
+      </td>
+      <td width="50%" class="invoice-title">
+        <strong>INVOICE</strong><br />
+        <small>{{ invoice_info.company }}<br />
+            {{ invoice_info.company_address }}<br />
+            Email: {{ invoice_info.company_email }}</small>
+      </td>
+    </tr>
+  </table>
+
+  <div class="invoice-details">
+    <strong>Billed To:</strong><br />
+    {{ invoice_info.client }}<br />
+    {{ invoice_info.client_address }}<br /><br />
+
+    <strong>Date:</strong> {{ invoice_info.date }}<br />
+    <strong>Due Date:</strong> {{ invoice_info.due_date }}
+  </div>
+
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        {% for key in data.0.keys %}
+          <th>{{ key|title }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+        <tr>
+          {% for value in row.values %}
+            <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr>
+      <td><strong>Subtotal:</strong></td>
+      <td>${{ grand_total|floatformat:2 }}</td>
+    </tr>
+    <tr>
+      <td><strong>Tax ({{ tax_rate }}%):</strong></td>
+      <td>${{ tax_amount|floatformat:2 }}</td>
+    </tr>
+    <tr>
+      <td><strong>Total Due:</strong></td>
+      <td><strong>${{ total_due|floatformat:2 }}</strong></td>
+    </tr>
+  </table>
+
+  <div class="footer-note">
+    Thank you for your business!<br />
+    Please make the payment by the due date.
+  </div>
+</div>
+
+</body>
+</html>

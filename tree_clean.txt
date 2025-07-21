@@ -54,10 +54,14 @@ invoice_generator/
 │   │   ├── form_errors.html
 │   │   └── messages.html
 │   ├── invoices/
+│   │   ├── invoice_template.html
+│   │   ├── invoice_template_pdf.html
+│   │   ├── new_invoice_template.html
 │   │   ├── preview.html
 │   │   └── upload.html
 │   └── main/
 │       ├── base.html
 │       └── navbar.html
+├── test_invoice.csv
 ├── tree_clean.txt
 └── update_readme.py
