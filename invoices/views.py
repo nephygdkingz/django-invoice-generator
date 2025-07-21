@@ -32,11 +32,14 @@ def upload_invoice_view(request):
             df['tax_amount'] = df['subtotal'] * df['tax']
             df['total'] = df['subtotal'] + df['tax_amount']
             grand_total = df['total'].sum()
+            sub_total = df['subtotal'].sum()
+
 
             # Store in session
             data = df.to_dict(orient='records')
             request.session['invoice_data'] = data
             request.session['grand_total'] = round(grand_total, 2)
+            request.session['sub_total'] = round(sub_total, 2)
 
             # Add invoice metadata
             request.session['invoice_info'] = {
@@ -74,15 +77,23 @@ def preview_invoice_view(request):
 def download_invoice_pdf_view(request):
     data = request.session.get('invoice_data', [])
     grand_total = request.session.get('grand_total', 0)
+    sub_total = request.session.get('sub_total', 0)
     invoice_info = request.session.get('invoice_info', {})
+
+    # calculate tax rate
+    tax_rate = 10  # percent
+    tax_amount = round((tax_rate / 100) * sub_total, 2)
+    total_due = round(sub_total + tax_amount, 2)
     if not data:
         return redirect('invoices:upload')
 
     html_string = render_to_string('invoices/invoice_template_pdf.html', {
         'data': data,
-        'grand_total': round(grand_total, 2),
+        'grand_total': total_due,
+        'sub_total': round(sub_total, 2),
         'invoice_info': invoice_info,
-        'tax_rate': 10  # assuming 10%
+        'tax_rate': 10,  # assuming 10%
+        'tax_amount': tax_amount,
     })
 
     result = BytesIO()
