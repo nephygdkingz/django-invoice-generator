@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Invoice</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+      }
+
+      .no-print {
+        display: none;
+      }
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      margin: 0;
+      padding: 0;
+      background-color: #fff;
+    }
+
+    .invoice-container {
+      max-width: 180mm;
+      margin: 0 auto;
+      padding: 10mm;
+    }
+
+    header {
+      border-bottom: 2px solid #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+    }
+
+    .header-left {
+      float: left;
+    }
+
+    .header-right {
+      float: right;
+      text-align: right;
+    }
+
+    .clearfix::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    .invoice-title {
+      font-size: 24px;
+      margin-top: 10px;
+    }
+
+    .logo {
+      max-height: 60px;
+    }
+
+    .invoice-details {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+
+    .totals {
+      text-align: right;
+    }
+
+    .totals td {
+      border: none;
+      padding: 4px 8px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 11px;
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+
+    /* ✅ Responsive Styling for Mobile */
+    @media screen and (max-width: 600px) {
+      body {
+        font-size: 14px;
+      }
+
+      .invoice-container {
+        padding: 10px;
+      }
+
+      .header-left,
+      .header-right {
+        float: none;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      table,
+      th,
+      td {
+        font-size: 14px;
+      }
+
+      .totals {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    <header class="clearfix">
+      <div class="header-left">
+        <img src="LOGO_URL_HERE" alt="Company Logo" class="logo" />
+      </div>
+      <div class="header-right">
+        <h1 class="invoice-title">INVOICE</h1>
+        <strong>Your Company</strong><br />
+        123 Business Rd.<br />
+        City, Country 12345<br />
+        Email: info@company.com
+      </div>
+    </header>
+
+    <section class="invoice-details">
+      <strong>Billed To:</strong><br />
+      Client Name<br />
+      456 Client St.<br />
+      Client City, Country<br /><br />
+
+      <strong>Invoice #: </strong>INV-001<br />
+      <strong>Date: </strong>2025-07-21<br />
+      <strong>Due Date: </strong>2025-08-01
+    </section>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Web Design Services</td>
+          <td>10</td>
+          <td>$50</td>
+          <td>$500</td>
+        </tr>
+        <tr>
+          <td>Hosting (6 months)</td>
+          <td>1</td>
+          <td>$100</td>
+          <td>$100</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="totals">
+      <tr>
+        <td><strong>Subtotal:</strong></td>
+        <td>$600</td>
+      </tr>
+      <tr>
+        <td><strong>Tax (10%):</strong></td>
+        <td>$60</td>
+      </tr>
+      <tr>
+        <td><strong>Total Due:</strong></td>
+        <td><strong>$660</strong></td>
+      </tr>
+    </table>
+
+    <footer>
+      Thank you for your business!<br />
+      Please make the payment by the due date.
+    </footer>
+  </div>
+</body>
+</html>

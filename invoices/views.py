@@ -27,31 +27,62 @@ def upload_invoice_view(request):
                 form.add_error('file', f'Error reading file: {str(e)}')
                 return render(request, 'invoices/upload.html', {'form': form})
 
-            # Convert DataFrame to list of dicts for template
+            # Add calculated columns
+            df['subtotal'] = df['quantity'] * df['unit_price']
+            df['tax_amount'] = df['subtotal'] * df['tax']
+            df['total'] = df['subtotal'] + df['tax_amount']
+            grand_total = df['total'].sum()
+
+            # Store in session
             data = df.to_dict(orient='records')
-            request.session['invoice_data'] = data  # Store in session temporarily
+            request.session['invoice_data'] = data
+            request.session['grand_total'] = round(grand_total, 2)
+
+            # Add invoice metadata
+            request.session['invoice_info'] = {
+                'invoice_number': 'INV-001',
+                'date': '2025-07-21',
+                'due_date': '2025-08-01',
+                'company': 'Your Company',
+                'company_address': '123 Business Rd.\nCity, Country 12345',
+                'company_email': 'info@company.com',
+                'client': 'Mark Andrew',
+                'client_address': '456 Client St.\nClient City, Country'
+            }
+
             return redirect('invoices:preview')
     else:
         form = UploadInvoiceForm()
     return render(request, 'invoices/upload.html', {'form': form})
 
+
 @login_required
 def preview_invoice_view(request):
     data = request.session.get('invoice_data', [])
+    grand_total = request.session.get('grand_total', 0)
+    invoice_info = request.session.get('invoice_info', {})
     if not data:
         return redirect('invoices:upload')
-    return render(request, 'invoices/preview.html', {'data': data})
+    return render(request, 'invoices/preview.html', {
+        'data': data,
+        'grand_total': round(grand_total, 2),
+        'invoice_info': invoice_info
+    })
 
 
+@login_required
 def download_invoice_pdf_view(request):
     data = request.session.get('invoice_data', [])
+    grand_total = request.session.get('grand_total', 0)
+    invoice_info = request.session.get('invoice_info', {})
     if not data:
         return redirect('invoices:upload')
 
-    html_string = render_to_string('invoices/invoice_template.html', {
+    html_string = render_to_string('invoices/invoice_template_pdf.html', {
         'data': data,
-        'company': 'Your Company Name',
-        'address': '123 Invoice Street, City, Country'
+        'grand_total': round(grand_total, 2),
+        'invoice_info': invoice_info,
+        'tax_rate': 10  # assuming 10%
     })
 
     result = BytesIO()

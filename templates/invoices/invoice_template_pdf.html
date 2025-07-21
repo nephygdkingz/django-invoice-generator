@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Invoice</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+      }
+
+      .no-print {
+        display: none;
+      }
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      margin: 0;
+      padding: 0;
+      background-color: #fff;
+    }
+
+    .invoice-container {
+      max-width: 180mm;
+      margin: 0 auto;
+      padding: 10mm;
+    }
+
+    header {
+      border-bottom: 2px solid #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+    }
+
+    .header-left {
+      float: left;
+    }
+
+    .header-right {
+      float: right;
+      text-align: right;
+    }
+
+    .clearfix::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    .invoice-title {
+      font-size: 24px;
+      margin-top: 10px;
+    }
+
+    .logo {
+      max-height: 60px;
+    }
+
+    .invoice-details {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+
+    .totals {
+      text-align: right;
+    }
+
+    .totals td {
+      border: none;
+      padding: 4px 8px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 11px;
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+
+    /* ✅ Responsive Styling for Mobile */
+    @media screen and (max-width: 600px) {
+      body {
+        font-size: 14px;
+      }
+
+      .invoice-container {
+        padding: 10px;
+      }
+
+      .header-left,
+      .header-right {
+        float: none;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      table,
+      th,
+      td {
+        font-size: 14px;
+      }
+
+      .totals {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    <header class="clearfix">
+      <div class="header-left">
+        <img src="LOGO_URL_HERE" alt="Company Logo" class="logo" />
+      </div>
+      <div class="header-right">
+        <h1 class="invoice-title">INVOICE</h1>
+        <strong>{{ invoice_info.company|title }}</strong><br />
+        {{ invoice_info.company_address }}.<br />
+        Email: {{ invoice_info.company_email }}
+      </div>
+    </header>
+
+    <section class="invoice-details">
+      <strong>Billed To:</strong><br />
+      {{ invoice_info.client }}<br />
+      {{ invoice_info.client_address }}.<br />
+
+      <strong>Invoice #: </strong>{{ invoice_info.invoice_number }}<br />
+      <strong>Date: </strong>{{ invoice_info.date }}<br />
+      <strong>Due Date: </strong>{{ invoice_info.due_date }}
+    </section>
+
+    <table>
+      <thead>
+        <tr>
+            {% for key in data.0.keys %}
+                <th>{{ key }}</th>
+            {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+            <tr>
+            {% for value in row.values %}
+                <td>{{ value }}</td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <table class="totals">
+      <tr>
+        <td><strong>Subtotal:</strong></td>
+        <td>${{ grand_total|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td><strong>Tax (10%):</strong></td>
+        <td>Tax ({{ tax_rate }}%): ${{ grand_total|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td><strong>Total Due:</strong></td>
+        <td><strong>${{ grand_total|floatformat:2 }}</strong></td>
+      </tr>
+    </table>
+
+    <footer>
+      Thank you for your business!<br />
+      Please make the payment by the due date.
+    </footer>
+  </div>
+</body>
+</html>
