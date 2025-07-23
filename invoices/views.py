@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
-from xhtml2pdf import pisa
-from io import BytesIO
+from weasyprint import HTML
+from django.http import HttpResponse
 
 from .forms import UploadInvoiceForm
 
@@ -94,13 +94,10 @@ def download_invoice_pdf_view(request):
         'tax_rate': 10,  # assuming 10%
         'tax_amount': tax_amount,
     })
+    html = HTML(string=html_string)
+    pdf = html.write_pdf()
 
-    result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html_string.encode("utf-8")), result)
-
-    if not pdf.err:
-        response = HttpResponse(result.getvalue(), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
-        return response
-
-    return HttpResponse("Error generating PDF", status=500)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+    return response
+    
