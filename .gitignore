@@ -21,3 +21,4 @@ env/
 # Django
 /static_root/
 /media_root/
+.vagrant/

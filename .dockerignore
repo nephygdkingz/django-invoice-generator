@@ -5,8 +5,11 @@ __pycache__
 *.sqlite3
 venv/
 env/
+node_modules/
+staticfiles/
 media/
 .gitignore
 *.md
 *.yml
 *.log
+.vagrant/
