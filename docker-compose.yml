@@ -3,9 +3,14 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn invoice_generator.wsgi:application --bind 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py makemigrations --noinput &&
+             python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput &&
+             gunicorn invoice_generator.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/app
+      - ./static:/app/static
     ports:
       - "8000:8000"
     environment:
