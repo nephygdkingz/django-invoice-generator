@@ -1,6 +1,6 @@
 import os
 
-IGNORE_FOLDERS = {'.git', 'venv', '__pycache__'}
+IGNORE_FOLDERS = {'.git', 'venv', '__pycache__', '.vagrant'}
 
 def generate_tree(root_dir, prefix=""):
     entries = sorted(os.listdir(root_dir))
