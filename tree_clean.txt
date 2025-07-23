@@ -1,7 +1,25 @@
 invoice_generator/
+├── .dockerignore
 ├── .gitignore
 ├── .prettierignore
+├── .vagrant/
+│   ├── machines/
+│   │   └── default/
+│   │       └── virtualbox/
+│   │           ├── action_provision
+│   │           ├── action_set_name
+│   │           ├── box_meta
+│   │           ├── creator_uid
+│   │           ├── id
+│   │           ├── index_uuid
+│   │           ├── private_key
+│   │           ├── synced_folders
+│   │           └── vagrant_cwd
+│   └── rgloader/
+│       └── loader.rb
+├── Dockerfile
 ├── README.md
+├── Vagrantfile
 ├── account/
 │   ├── __init__.py
 │   ├── admin.py
@@ -14,6 +32,7 @@ invoice_generator/
 │   ├── urls.py
 │   └── views.py
 ├── db.sqlite3
+├── docker-compose.yml
 ├── generate_tree.py
 ├── invoice_generator/
 │   ├── __init__.py

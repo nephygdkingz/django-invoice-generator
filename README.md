@@ -1,49 +1,49 @@
-# Step 4: Generate PDF Invoices with Totals & Tax
+# Step 5: Dockerize the App Using Vagrant
 
-This branch adds PDF generation and invoice calculations to the Django Invoice Generator.
+This branch adds Docker support to the Django Invoice Generator by running the containerized app inside a **Vagrant-managed Linux VM**.
 
 ## ✅ What Was Done
 
-- Created HTML invoice template
-- Used `xhtml2pdf` to generate PDFs (Windows-friendly alternative to `weasyprint`)
-- Added **invoice totals calculation**:
-  - Subtotal = Quantity × Unit Price
-  - Tax Amount = (tax_rate / 100) \* Subtotal
-  - Total = Subtotal + Tax
-- Displayed **grand total** in preview and PDF
-- Styled invoice with CSS
-- Passed invoice data from session to template
+- Created `Dockerfile` and `docker-compose.yml`
+- Added `.dockerignore` to exclude unnecessary files
+- Switched back to `weasyprint` for PDF generation
+- Used `Vagrant` to run Docker on a Linux VM
+- Tested PDF generation in container
+- Updated views and templates for compatibility
 
-> 💡 Note: We're using `xhtml2pdf` for now because `weasyprint` requires native libraries that aren't available on Windows. We'll switch back to `weasyprint` in Step 5 when we dockerize the app.
+> 💡 Note: Docker Desktop is not available on this machine, so we use Vagrant with Ubuntu to run Docker and `weasyprint` (which requires Linux system libraries).
 
-## 🧪 How to Run
+## 🧪 How to Run with Vagrant + Docker
 
-1. Activate virtual environment
-2. Run migrations:
+1. Start the Vagrant VM:
+
    ```bash
-   python manage.py migrate
+   vagrant up
+
    ```
 
-## 🧪 How to Run
+2. SSH into the VM:
 
-1. Activate virtual environment
-2. Run migrations:
    ```bash
-   python manage.py migrate
+   vagrant ssh
+
    ```
-3. Run the server:
+
+3. Build and run the Docker app:
 
    ```bash
-   python manage.py runserver
+   cd /vagrant
+   sudo docker-compose up --build
+
    ```
 
 4. Visit:  
    [http://127.0.0.1:8000/upload/](http://127.0.0.1:8000/upload/)
    - Upload a CSV or Excel file
    - Preview the parsed invoice data
-   - Click "Download PDF"
+   - Click "Download PDF" to download the pdf invoice
 
-<!-- You can take the csv sample file in root folder named test_invoice.csv to test it-->
+> You can take the csv sample file in root folder, the file is named test_invoice.csv to test it
 
 ## 📁 Project Structure
 
