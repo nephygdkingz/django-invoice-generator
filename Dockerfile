@@ -1,37 +1,35 @@
-# Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set the working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        build-essential \
-        libglib2.0-0 \
-        libgdk-pixbuf2.0-0 \
-        libpango-1.0-0 \
-        libpangocairo-1.0-0 \
-        libgirepository-1.0-1 \
-        libcairo2 \
-        libxml2 \
-        libxslt1.1 \
-        zlib1g \
-        libpng-dev \
-        libjpeg-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Separate apt-get update to allow better caching and debugging
+RUN apt-get update
 
-# Install Python dependencies
-COPY requirements.txt /app/
+# Split install into two blocks to isolate slow installs
+RUN apt-get install -y --no-install-recommends \
+    build-essential \
+    libpango-1.0-0 \
+    libcairo2 \
+    libpangocairo-1.0-0
+
+RUN apt-get install -y --no-install-recommends \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    libxml2 \
+    libxslt1.1 \
+    zlib1g-dev \
+    libjpeg-dev \
+    shared-mime-info \
+    curl \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the app
-COPY . /app/
+COPY . .
 
-# Expose port and run server
 EXPOSE 8000
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "invoice_generator.wsgi:application"]
