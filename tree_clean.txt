@@ -1,5 +1,6 @@
 invoice_generator/
 ├── .dockerignore
+├── .env
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
@@ -21,6 +22,17 @@ invoice_generator/
 │   └── views.py
 ├── db.sqlite3
 ├── docker-compose.yml
+├── env.txt
+├── frontend/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── migrations/
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
 ├── generate_tree.py
 ├── invoice_generator/
 │   ├── __init__.py
@@ -197,6 +209,8 @@ invoice_generator/
 │   ├── authentication/
 │   │   ├── login.html
 │   │   └── register.html
+│   ├── frontend/
+│   │   └── home.html
 │   ├── includes/
 │   │   ├── form_errors.html
 │   │   └── messages.html
