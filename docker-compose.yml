@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     build: .
@@ -13,5 +11,6 @@ services:
       - ./static:/app/static
     ports:
       - "8000:8000"
-    environment:
-      - DEBUG=False
+    env_file:
+      - .env
+
