@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # my local apps
+    'frontend',
     'account',
     'invoices',
 ]

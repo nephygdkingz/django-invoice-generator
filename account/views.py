@@ -6,6 +6,8 @@ from django.contrib import messages
 from .forms import CustomLoginForm, CustomUserCreationForm
 
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('account:dashboard')
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -20,6 +22,8 @@ def register_view(request):
     return render(request, 'authentication/register.html', {'form': form})
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('account:dashboard')
     if request.method == 'POST':
         form = CustomLoginForm(data=request.POST)
         if form.is_valid():
