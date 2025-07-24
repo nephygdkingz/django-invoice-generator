@@ -1,5 +1,8 @@
 invoice_generator/
 ├── .dockerignore
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── .gitignore
 ├── .prettierignore
 ├── Dockerfile
