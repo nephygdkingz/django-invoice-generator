@@ -10,7 +10,7 @@ __pycache__
 *.pot
 *.mo
 *.po
-/manage.py
+# /manage.py
 /invoice_generator/invoice_generator/local_settings.py
 
 # Virtual Environment
