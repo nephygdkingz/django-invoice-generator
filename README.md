@@ -1,93 +1,127 @@
-# Step 7: Switch to PostgreSQL with `dj-database-url`
+# Step 8: Add Invoice History & Prepare for Deployment
 
-This branch replaces Django's default `sqlite3` database with **PostgreSQL** using the `dj-database-url` library, making the app production-ready and compatible with cloud platforms like:
-
-- ✅ [Render](https://render.com)
-- ✅ [Supabase](https://supabase.com)
-- ✅ [Neon](https://neon.tech)
-- ✅ [Railway](https://railway.app)
-- ✅ [Fly.io](https://fly.io)
-
-> 🔒 **Why?**  
-> Platforms like Render use **ephemeral storage** — any changes to `db.sqlite3` are lost on restart.  
-> PostgreSQL provides **persistent, reliable storage** for users, invoices, and session data.
-
----
+This branch adds persistent storage for generated invoices and prepares the app for deployment to **Render** or **Supabase**.
 
 ## ✅ What Was Done
 
-- ✅ Added `dj-database-url` to parse `DATABASE_URL`
-- ✅ Updated `settings.py` to support:
-  - `sqlite3` for **local development**
-  - `PostgreSQL` via `DATABASE_URL` in **production**
-- ✅ Added `.env` support for local environment variables
-- ✅ Ensured migrations run automatically in Docker
-- ✅ Made the app **database-agnostic** — works with any PostgreSQL provider
+- Created `InvoiceHistory` model to store invoice metadata
+- Added UUID primary key for security
+- Linked to Django `User` model
+- Updated `Dockerfile` to collect static files
+- Ensured compatibility with PostgreSQL (Render, Supabase)
+- Used `dj-database-url` for database flexibility
 
----
+## 🐳 How to Run Locally with Docker & Docker Compose
+
+You can run the entire app in containers for a production like environment.
+
+### 1. Make sure you have:
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/) (v2.22.0+ recommended)
+
+### 2. Build and run the app
+
+```bash
+docker-compose up --build
+```
+
+3. Access the app
+   Open your browser:
+
+```bash
+http://127.0.0.1:8000
+```
+
+The app will be served via Gunicorn in a Docker container , just like in production.
+
+4. Run Django commands (optional)
+   To run migrate, createsuperuser, or test inside the container:
+
+```bash
+# Run migrations
+docker-compose run --rm web python manage.py migrate
+
+# Create a superuser
+docker-compose run --rm web python manage.py createsuperuser
+
+# Run tests
+docker-compose run --rm web python manage.py test
+```
+
+> Tip: Use --rm to clean up the container after the command finishes.
+
+5. Upload a csv to generate an invoice — download the pdf invoice
+
+> "The test CSV file is located in the root folder (test_invoice.csv). Please use it as a reference when creating your own CSV file."
+
+6. Shut down
+   Press Ctrl+C in the terminal, then:
+
+```bash
+docker-compose down
+```
 
 ## 🧪 How to Run Locally
 
-### Option 1: Use SQLite (Default)
-
-No setup needed — just run:
+1. Apply migrations:
 
 ```bash
-python manage.py runserver
-
-```
-
-Option 2: Use PostgreSQL Locally (Recommended for Consistency)
-
-- Install PostgreSQL (e.g., via Postgres.app or brew install postgresql)
-- Create a database:
-
-```bash
-createdb invoice_local
-```
-
-3. Create a .env file in the project root:
-
-```bash
-DATABASE_URL=postgres://localhost/invoice_local
-DEBUG=True
-SECRET_KEY=your-secret-key-here
-```
-
-4. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-5. Run migrations:
-
-```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
-6. Start Server:
+2. Run server:
 
 ```bash
 python manage.py runserver
 ```
 
-🚀 How to Deploy to Render / Supabase / Neon
+3. Upload a csv to generate an invoice — download the pdf invoice
 
-1. Set the DATABASE_URL environment variable in your platform:
+> "The test CSV file is located in the root folder (test_invoice.csv). Please use it as a reference when creating your own CSV file."
 
-```
-postgres://user:password@host:5432/dbname
-```
+🚀 How to Deploy to Render
 
-2. Deploy using Docker
-3. Migrations run automatically via:
+1. Go to https://render.com → "New Web Service"
 
-```
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn ..."]
-```
+2. Connect your GitHub repo
 
-> "💡 Tip: Your app now works with any PostgreSQL provider — just change the connection string! "
+3. Set:
+
+- Runtime : Docker
+- Start Command : gunicorn invoice_generator.wsgi:application --bind 0.0.0.0:8000
+
+4. Add environment variables:
+
+- DATABASE_URL: Your PostgreSQL connection string
+- SECRET_KEY: A long, random key
+- DEBUG: False
+- ALLOWED_HOSTS: your-app.onrender.com, your domain name if you have any
+
+5. Deploy!
+
+🌐 How to Use Supabase PostgreSQL
+
+1. Sign up at https://supabase.com
+
+2. Create a project
+
+3. Copy the connection string from Settings → Database
+
+4. Paste into Render’s Environment - DATABASE_URL
+
+- ✅ No code changes needed — dj-database-url handles the rest.
+
+📁 Files Updated
+
+1. invoices/models.py – Added InvoiceHistory
+
+2. Dockerfile – Added collectstatic
+
+3. settings.py – Improved security and config
+
+4. requirements.txt – Added whitenoise (optional)
 
 ```
 invoice_generator/
@@ -112,6 +146,7 @@ invoice_generator/
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── database-info.txt
 ├── db.sqlite3
 ├── docker-compose.yml
 ├── env.txt
@@ -178,9 +213,5 @@ invoice_generator/
 ├── test_invoice.csv
 ├── tree_clean.txt
 └── update_readme.py
-
-```
-
-```
 
 ```
