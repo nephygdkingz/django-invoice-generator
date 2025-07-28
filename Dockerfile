@@ -32,5 +32,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 EXPOSE 8000
+
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
 # CMD ["gunicorn", "--bind", "0.0.0.0:8000", "invoice_generator.wsgi:application"]
 CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn invoice_generator.wsgi:application --bind 0.0.0.0:8000"]
