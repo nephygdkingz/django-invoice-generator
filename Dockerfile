@@ -36,5 +36,6 @@ EXPOSE 8000
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "invoice_generator.wsgi:application"]
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn invoice_generator.wsgi:application --bind 0.0.0.0:8000"]
+# CMD to run makemigrations, migrate, then start gunicorn
+CMD ["sh", "-c", "python manage.py makemigrations && python manage.py migrate --noinput && gunicorn invoice_generator.wsgi:application --bind 0.0.0.0:8000"]
+

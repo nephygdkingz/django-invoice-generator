@@ -20,6 +20,7 @@ invoice_generator/
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── database-info.txt
 ├── db.sqlite3
 ├── docker-compose.yml
 ├── env.txt
