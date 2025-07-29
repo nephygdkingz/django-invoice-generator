@@ -75,7 +75,12 @@
     }
 
     table.invoice-table thead tr {
-      background-color: #f0f0f0;
+      background-color: #120450;
+      color: #fff;
+    }
+    .total-due{
+        background-color: #120450 !important;
+        color: #fff !important;
     }
 
     table.invoice-table th,
@@ -219,8 +224,8 @@
       <td>${{ tax_amount|floatformat:2 }}</td>
     </tr>
     <tr>
-      <td><strong>Total Due:</strong></td>
-      <td><strong>${{ total_due|floatformat:2 }}</strong></td>
+      <td class="total-due"><strong>Total Due:</strong></td>
+      <td class="total-due"><strong>${{ total_due|floatformat:2 }}</strong></td>
     </tr>
   </table>
 

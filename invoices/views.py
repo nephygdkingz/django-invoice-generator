@@ -6,9 +6,12 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.http import HttpResponse
 from datetime import date
+from django.conf import settings
+from django.core.files.base import ContentFile
 
 from .forms import UploadInvoiceForm, InvoiceForm
 from .utils import generate_invoice_number, save_temp_uploaded_file, load_temp_uploaded_file
+from .models import InvoiceHistory
 
 
 @login_required
@@ -83,14 +86,11 @@ def preview_invoice_view(request):
 
     # Get logo URL from stored path
     logo_path = request.session.get('company_logo_path')
-    print(f"Logo path: {logo_path}")  # Debugging line
     logo_url = None
     if logo_path:
-        from django.conf import settings
         logo_url = settings.MEDIA_URL + logo_path  # e.g., /media/tmp/logo.png
-        print(f"Logo URL: {logo_url}")  # Debugging line
 
-    return render(request, 'invoices/invoice_preview1.html', {
+    return render(request, 'invoices/invoice_preview_main.html', {
         'data': data,
         'total_due': total_due,
         'grand_total': round(grand_total, 2),
@@ -100,38 +100,56 @@ def preview_invoice_view(request):
         'invoice_number': invoice_number,
         'logo_url': logo_url,  # ✅ pass to template
     })
-    # return render(request, 'invoices/preview.html', {
-    #     'data': data,
-    #     'grand_total': round(grand_total, 2),
-    #     'invoice_info': invoice_info
-    # })
-
 
 @login_required
 def download_invoice_pdf_view(request):
     data = request.session.get('invoice_data', [])
     grand_total = request.session.get('grand_total', 0)
     invoice_info = request.session.get('invoice_info', {})
+    invoice_number = request.session.get('invoice_number', generate_invoice_number())
 
-    # calculate tax rate
+    if not data or not invoice_info:
+        return redirect('invoices:upload')
+
     tax_rate = 10  # percent
     tax_amount = round((tax_rate / 100) * grand_total, 2)
     total_due = round(grand_total + tax_amount, 2)
-    if not data:
-        return redirect('invoices:upload')
+
+    # Get logo URL from stored path
+    logo_path = request.session.get('company_logo_path')
+    logo_url = None
+    if logo_path:
+        logo_url = request.build_absolute_uri(settings.MEDIA_URL + logo_path)
 
     html_string = render_to_string('invoices/invoice_template_pdf.html', {
         'data': data,
         'total_due': total_due,
         'grand_total': round(grand_total, 2),
         'invoice_info': invoice_info,
-        'tax_rate': 10,  # assuming 10%
+        'tax_rate': tax_rate,
         'tax_amount': tax_amount,
+        'invoice_number': invoice_number,
+        'logo_url': logo_url,
     })
+
     html = HTML(string=html_string)
     pdf = html.write_pdf()
 
+    pdf_filename = f"{invoice_number}.pdf"
+    invoice = InvoiceHistory.objects.create(
+        user=request.user,
+        company_name=invoice_info.get('company_name'),
+        client_name=invoice_info.get('client_name'),
+        invoice_number=invoice_number,
+        issue_date=invoice_info.get('issue_date'),
+        due_date=invoice_info.get('due_date'),
+        total_due=total_due,
+    )
+
+    pdf_file = ContentFile(pdf)
+    invoice.pdf_file.save(pdf_filename, pdf_file, save=True)
+
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
     return response
     
