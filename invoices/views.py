@@ -5,9 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.http import HttpResponse
+from datetime import date
 
 from .forms import UploadInvoiceForm, InvoiceForm
-from .utils import generate_invoice_number
+from .utils import generate_invoice_number, save_temp_uploaded_file
 
 
 @login_required
@@ -18,6 +19,7 @@ def upload_invoice_view(request):
 
         if form.is_valid() and invoice_form.is_valid():
             uploaded_file = request.FILES['file']
+
             try:
                 if uploaded_file.name.endswith('.csv'):
                     df = pd.read_csv(uploaded_file)
@@ -34,17 +36,33 @@ def upload_invoice_view(request):
             df['subtotal'] = df['quantity'] * df['unit_price']
             grand_total = df['subtotal'].sum()
 
+            # Clean invoice info (excluding file-like objects)
+            invoice_info = {
+                k: (
+                    # convert date to string
+                    v.isoformat() if isinstance(v, date) else v  
+                )
+                for k, v in invoice_form.cleaned_data.items()
+                if not hasattr(v, 'read')  # skip files like company_logo
+            }
 
-            # Store in session
-            data = df.to_dict(orient='records')
-            request.session['invoice_data'] = data
+            # ✅ Save logo separately and store path in session
+            logo_file = request.FILES.get('company_logo')
+            if logo_file:
+                logo_path = save_temp_uploaded_file(logo_file)
+                request.session['company_logo_path'] = logo_path
+
+            # ✅ Store data in session
+            request.session['invoice_data'] = df.to_dict(orient='records')
             request.session['grand_total'] = round(grand_total, 2)
-            request.session['invoice_info'] = invoice_form.cleaned_data
+            request.session['invoice_info'] = invoice_info
             request.session['invoice_number'] = generate_invoice_number()
+
             return redirect('invoices:preview')
     else:
         form = UploadInvoiceForm()
         invoice_form = InvoiceForm()
+
     return render(request, 'invoices/upload.html', {'form': form, 'invoice_form': invoice_form})
 
 
