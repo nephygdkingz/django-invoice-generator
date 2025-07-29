@@ -6,14 +6,17 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.http import HttpResponse
 
-from .forms import UploadInvoiceForm
+from .forms import UploadInvoiceForm, InvoiceForm
+from .utils import generate_invoice_number
 
 
 @login_required
 def upload_invoice_view(request):
     if request.method == 'POST':
         form = UploadInvoiceForm(request.POST, request.FILES)
-        if form.is_valid():
+        invoice_form = InvoiceForm(request.POST, request.FILES)
+
+        if form.is_valid() and invoice_form.is_valid():
             uploaded_file = request.FILES['file']
             try:
                 if uploaded_file.name.endswith('.csv'):
@@ -22,17 +25,13 @@ def upload_invoice_view(request):
                     df = pd.read_excel(uploaded_file)
                 else:
                     form.add_error('file', 'Unsupported file format. Use CSV or Excel.')
-                    return render(request, 'invoices/upload.html', {'form': form})
+                    return render(request, 'invoices/upload.html', {'form': form, 'invoice_form': invoice_form})
             except Exception as e:
                 form.add_error('file', f'Error reading file: {str(e)}')
-                return render(request, 'invoices/upload.html', {'form': form})
+                return render(request, 'invoices/upload.html', {'form': form, 'invoice_form': invoice_form})
 
             # Add calculated columns
             df['subtotal'] = df['quantity'] * df['unit_price']
-            # df['tax_amount'] = df['subtotal'] * df['tax']
-            # df['total'] = df['subtotal'] + df['tax_amount']
-            # grand_total = df['total'].sum()
-            # sub_total = df['subtotal'].sum()
             grand_total = df['subtotal'].sum()
 
 
@@ -40,23 +39,13 @@ def upload_invoice_view(request):
             data = df.to_dict(orient='records')
             request.session['invoice_data'] = data
             request.session['grand_total'] = round(grand_total, 2)
-
-            # Add invoice metadata
-            request.session['invoice_info'] = {
-                'invoice_number': 'INV-001',
-                'date': '2025-07-21',
-                'due_date': '2025-08-01',
-                'company': 'Your Company',
-                'company_address': '123 Business Rd.\nCity, Country 12345',
-                'company_email': 'info@company.com',
-                'client': 'Mark Andrew',
-                'client_address': '456 Client St.\nClient City, Country'
-            }
-
+            request.session['invoice_info'] = invoice_form.cleaned_data
+            request.session['invoice_number'] = generate_invoice_number()
             return redirect('invoices:preview')
     else:
         form = UploadInvoiceForm()
-    return render(request, 'invoices/upload.html', {'form': form})
+        invoice_form = InvoiceForm()
+    return render(request, 'invoices/upload.html', {'form': form, 'invoice_form': invoice_form})
 
 
 @login_required
@@ -64,6 +53,7 @@ def preview_invoice_view(request):
     data = request.session.get('invoice_data', [])
     grand_total = request.session.get('grand_total', 0)
     invoice_info = request.session.get('invoice_info', {})
+    invoice_number = request.session.get('invoice_number', generate_invoice_number())
     if not data:
         return redirect('invoices:upload')
     return render(request, 'invoices/preview.html', {

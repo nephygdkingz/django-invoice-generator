@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="row justify-content-center align-items-center py-5">
-  <div class="col-md-7 col-12">
+  <div class="col-md-8 col-12">
     <div class="card">
       <div class="card-body">
         <h2 class="card-title text-center">Upload Invoice Data!</h2>
@@ -12,6 +12,8 @@
         <hr>
         <form method="post"  class="spinner-form" enctype="multipart/form-data">
           {% csrf_token %}
+          <h5 class="text-center">Upload File</h5>
+          <hr>
           {% for field in form %}
             <div class="mb-3">
               {{ field.label_tag }}
@@ -31,8 +33,83 @@
             </div>
           {% endfor %}
 
+          <h5 class="text-center">Your Company</h5>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ invoice_form.company_name.label_tag }}
+                {{ invoice_form.company_name }}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ invoice_form.company_address.label_tag}}
+                {{ invoice_form.company_address}} 
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ invoice_form.company_logo.label_tag}}
+                {{ invoice_form.company_logo}}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ invoice_form.company_email.label_tag}}
+                {{ invoice_form.company_email}}
+              </div>
+            </div>
+          </div>
+          <h5 class="text-center"> (Billed To)</h5>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ invoice_form.client_name.label_tag}}
+                {{ invoice_form.client_name}}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ invoice_form.client_email.label_tag}}
+                {{ invoice_form.client_email}}
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            {{ invoice_form.client_address.label_tag}}
+            {{ invoice_form.client_address}}
+          </div>
+          
+          
 
-          <!-- <button type="submit" class="btn btn-primary w-100 mt-4">Login</button> -->
+          <h5 class="text-center">Invoice Details</h5>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              {{ invoice_form.issue_date.label_tag}}
+              {{ invoice_form.issue_date}}
+            </div>
+            <div class="col-md-6">
+              {{ invoice_form.due_date.label_tag}}
+              {{ invoice_form.due_date}}
+            </div>
+          </div>
+          <!-- <div class="mb-3">
+            {{ invoice_form.invoice_number.label_tag}}
+            {{ invoice_form.invoice_number}}  
+            <small class="form-text text-muted">Leave blank for auto-generate</small>
+          </div> -->
+          
+          <div class="mb-3">
+            {{ invoice_form.notes.label_tag}}
+            {{ invoice_form.notes}}
+          </div>
+          
+
           <button type="submit" class="btn btn-primary w-100 spinner-button d-flex align-items-center justify-content-center mt-3">
             <span class="btn-text">Upload</span>
             <span class="btn-spinner spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display: none;"></span>
@@ -42,10 +119,4 @@
     </div>
   </div>
 </div>
-<!-- <h2>Upload Invoice Data</h2>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-primary">Upload</button>
-</form> -->
 {% endblock %}
