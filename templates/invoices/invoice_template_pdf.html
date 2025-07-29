@@ -54,8 +54,13 @@
       text-align: left;
     }
 
-    table.invoice-table th {
-      background-color: #f0f0f0;
+    table.invoice-table thead tr {
+      background-color: #120450;
+      color: #fff;
+    }
+    .total-due{
+        background-color: #120450 !important;
+        color: #fff !important;
     }
 
     table.totals {
@@ -85,10 +90,10 @@
   <table width="100%">
     <tr>
       <td style="text-align: left; font-size: 10px;">
-        {{ invoice_info.company }} | {{ invoice_info.company_email }}
+        {{ invoice_info.company_name }} | {{ invoice_info.company_email }}
       </td>
       <td style="text-align: right; font-size: 10px;">
-        Invoice #: {{ invoice_info.invoice_number }}
+        Invoice #: {{ invoice_number }}
       </td>
     </tr>
   </table>
@@ -109,7 +114,7 @@
       </td>
       <td width="50%" class="invoice-title">
         <strong>INVOICE</strong><br />
-        <small>{{ invoice_info.company }}<br />
+        <small>{{ invoice_info.company_name }}<br />
             {{ invoice_info.company_address }}<br />
             Email: {{ invoice_info.company_email }}</small>
       </td>
@@ -118,10 +123,11 @@
 
   <div class="invoice-details">
     <strong>Billed To:</strong><br />
-    {{ invoice_info.client }}<br />
-    {{ invoice_info.client_address }}<br /><br />
+    {{ invoice_info.client_name }}<br />
+    {{ invoice_info.client_address }}<br />
+    Email: {{ invoice_info.client_email }}<br /><br />
 
-    <strong>Date:</strong> {{ invoice_info.date }}<br />
+    <strong>Date:</strong> {{ invoice_info.issue_date }}<br />
     <strong>Due Date:</strong> {{ invoice_info.due_date }}
   </div>
 
@@ -154,8 +160,8 @@
       <td>${{ tax_amount|floatformat:2 }}</td>
     </tr>
     <tr>
-      <td><strong>Total Due:</strong></td>
-      <td><strong>${{ total_due|floatformat:2 }}</strong></td>
+      <td class="total-due"><strong>Total Due:</strong></td>
+      <td class="total-due"><strong>${{ total_due|floatformat:2 }}</strong></td>
     </tr>
   </table>
 

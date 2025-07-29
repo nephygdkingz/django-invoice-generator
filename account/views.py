@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import FileResponse, Http404
+from django.shortcuts import get_object_or_404
 
 from .forms import CustomLoginForm, CustomUserCreationForm
+from invoices.models import InvoiceHistory
 
 def register_view(request):
     if request.user.is_authenticated:
@@ -44,4 +47,24 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'account/dashboard.html')
+    invoices = InvoiceHistory.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'account/dashboard.html', {'invoices': invoices})
+
+
+@login_required
+def download_saved_invoice_view(request, invoice_id):
+    if not request.user.userprofile.is_paid:
+        invoice_count = InvoiceHistory.objects.filter(user=request.user).count()
+        if invoice_count >= 4:
+            messages.error(request, "Free users are limited to 4 invoices. Upgrade to Pro to generate more.")
+            return redirect('invoices:upgrade')
+
+    invoice = get_object_or_404(InvoiceHistory, id=invoice_id, user=request.user)
+
+    if not invoice.pdf_file:
+        raise Http404("PDF file not found.")
+
+    try:
+        return FileResponse(invoice.pdf_file.open('rb'), as_attachment=True, filename=invoice.pdf_file.name)
+    except FileNotFoundError:
+        raise Http404("PDF file is missing on the server.")

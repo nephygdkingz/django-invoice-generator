@@ -1,11 +1,55 @@
 {% extends "main/base.html" %}
 {% block content %}
+
+<style>
+    .btn-info{
+        background-color: rgb(212, 6, 102) !important;
+        border-color: rgb(212, 6, 102) !important;
+    }
+</style>
 <div class="row pt-5 pb-3">
     <div class="col-md-12">
         <h2>Welcome to Your Dashboard</h2>
         <p>You are logged in as <strong>{{ request.user.username }}</strong></p>
         <p class="text-muted">Here you can manage your invoices, view your account details, and more.</p>
         <hr>
+        <h4>Invoice History</h4>
+        <table class="table table-bordered">
+        <thead>
+            <tr>
+            <th>Invoice #</th>
+            <th>Client</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th></th>
+            <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inv in invoices %}
+            <tr>
+                <td>{{ inv.invoice_number }}</td>
+                <td>{{ inv.client_name }}</td>
+                <td>${{ inv.total_due }}</td>
+                <td>{{ inv.issue_date }}</td>
+                {% if inv.pdf_file %}
+                    {% if request.user.userprofile.is_paid %}
+                        <td>
+                            <a href="{{ inv.pdf_file.url }}" class="btn btn-sm btn-primary">View Invoice</a>
+                        </td>
+                    {% endif %}
+                    <td>
+                        <a href="{% url 'account:download_invoice' invoice_id=inv.id %}" class="btn btn-sm btn-info text-white">Download</a>
+                    </td>
+                {% else %}
+                    <td>
+                        <span class="text-muted">No PDF</span>
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
     </div>
 </div>
 

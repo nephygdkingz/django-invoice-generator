@@ -1,127 +1,103 @@
-# Step 8: Add Invoice History & Prepare for Deployment
+# Step 8.5: Final Feature Enhancements & Invoice History Save
 
-This branch adds persistent storage for generated invoices and prepares the app for deployment to **Render** or **Supabase**.
+This branch completes the core functionality of the **Django Invoice Generator**, making it production-ready and monetization-capable.
 
 ## ✅ What Was Done
 
-- Created `InvoiceHistory` model to store invoice metadata
-- Added UUID primary key for security
-- Linked to Django `User` model
-- Updated `Dockerfile` to collect static files
-- Ensured compatibility with PostgreSQL (Render, Supabase)
-- Used `dj-database-url` for database flexibility
+- Added full company & client info input form
+- Implemented dynamic invoice number generation (e.g., `INV-001`, `INV-002`)
+- Added support for company logo upload and display in PDF
+- Added date, due date, and notes fields
+- Integrated `InvoiceHistory` model to **save every generated invoice**
+- Added PDF file storage in `media/invoices/`
+- Used `weasyprint` (in Docker) for high-quality PDFs
+- Linked all data to the logged-in user
+- Prepared for paid features using `is_paid` flag
 
-## 🐳 How to Run Locally with Docker & Docker Compose
+> 💡 This turns the app from a prototype into a **real product** ready for SaaS or one-time sale.
 
-You can run the entire app in containers for a production like environment.
-
-### 1. Make sure you have:
-
-- [Docker](https://www.docker.com/get-started)
-- [Docker Compose](https://docs.docker.com/compose/install/) (v2.22.0+ recommended)
-
-### 2. Build and run the app
-
-```bash
-docker-compose up --build
-```
-
-3. Access the app
-   Open your browser:
-
-```bash
-http://127.0.0.1:8000
-```
-
-The app will be served via Gunicorn in a Docker container , just like in production.
-
-4. Run Django commands (optional)
-   To run migrate, createsuperuser, or test inside the container:
-
-```bash
-# Run migrations
-docker-compose run --rm web python manage.py migrate
-
-# Create a superuser
-docker-compose run --rm web python manage.py createsuperuser
-
-# Run tests
-docker-compose run --rm web python manage.py test
-```
-
-> Tip: Use --rm to clean up the container after the command finishes.
-
-5. Upload a csv to generate an invoice — download the pdf invoice
-
-> "The test CSV file is located in the root folder (test_invoice.csv). Please use it as a reference when creating your own CSV file."
-
-6. Shut down
-   Press Ctrl+C in the terminal, then:
-
-```bash
-docker-compose down
-```
+---
 
 ## 🧪 How to Run Locally
 
-1. Apply migrations:
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-2. Run server:
+### Option 1: Django (Development)
 
 ```bash
 python manage.py runserver
 ```
 
-3. Upload a csv to generate an invoice — download the pdf invoice
+Option 2: Docker & Docker Compose
 
-> "The test CSV file is located in the root folder (test_invoice.csv). Please use it as a reference when creating your own CSV file."
+```bash
+docker-compose up --build
+```
 
-🚀 How to Deploy to Render
+App runs at: http://127.0.0.1:8000
 
-1. Go to https://render.com → "New Web Service"
+🐳 How to Run with Docker & Compose
 
-2. Connect your GitHub repo
+1.  Make sure Docker and Docker Compose are installed
+2.  Build and run:
 
-3. Set:
+```bash
+docker-compose up --build
+```
 
-- Runtime : Docker
-- Start Command : gunicorn invoice_generator.wsgi:application --bind 0.0.0.0:8000
+Access:
 
-4. Add environment variables:
+- http://127.0.0.1:8000/upload/
+- Upload CSV → Fill form → Generate PDF → Saved to history
 
-- DATABASE_URL: Your PostgreSQL connection string
-- SECRET_KEY: A long, random key
-- DEBUG: False
-- ALLOWED_HOSTS: your-app.onrender.com, your domain name if you have any
+Run Django Commands
 
-5. Deploy!
+```bash
+# Migrate
+docker-compose run --rm web python manage.py migrate
 
-🌐 How to Use Supabase PostgreSQL
+# Create superuser
+docker-compose run --rm web python manage.py createsuperuser
 
-1. Sign up at https://supabase.com
+# Test
+docker-compose run --rm web python manage.py test
+```
 
-2. Create a project
+Invoice History & PDF Save
+Every time a user downloads a PDF:
 
-3. Copy the connection string from Settings → Database
+- Data is saved to InvoiceHistory
+- Generated PDF is stored in media/invoices/
+- User can view all past invoices in their dashbaord
 
-4. Paste into Render’s Environment - DATABASE_URL
+Model Fields
 
-- ✅ No code changes needed — dj-database-url handles the rest.
+````
+class InvoiceHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    company_name = models.CharField(max_length=255)
+    client_name = models.CharField(max_length=255)
+    invoice_number = models.CharField(max_length=100)
+    issue_date = models.DateField()
+    due_date = models.DateField()
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    pdf_file = models.FileField(upload_to='invoices/pdfs/')
+    created_at = models.DateTimeField(auto_now_add=True)
+```
 
-📁 Files Updated
+🔐 Premium Ready: is_paid Flag
 
-1. invoices/models.py – Added InvoiceHistory
+Added UserProfile model:
+```
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_paid = models.BooleanField(default=False)
+    company_name = models.CharField(...)
+    company_logo = models.ImageField(...)
+```
 
-2. Dockerfile – Added collectstatic
+Used to:
 
-3. settings.py – Improved security and config
-
-4. requirements.txt – Added whitenoise (optional)
+   - Limit free users
+   - Unlock premium features (logo, no watermark, bulk export)
 
 ```
 invoice_generator/
@@ -141,6 +117,7 @@ invoice_generator/
 │   ├── apps.py
 │   ├── forms.py
 │   ├── migrations/
+│   │   ├── 0001_initial.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── tests.py
@@ -173,12 +150,16 @@ invoice_generator/
 │   ├── apps.py
 │   ├── forms.py
 │   ├── migrations/
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_invoicehistory_company_name.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── tests.py
 │   ├── urls.py
+│   ├── utils.py
 │   └── views.py
 ├── manage.py
+├── media/
 ├── requirements.txt
 ├── static/
 │   └── assets/
@@ -190,6 +171,7 @@ invoice_generator/
 │       ├── images/
 │       └── js/
 │           └── main.js
+├── staticfiles/
 ├── templates/
 │   ├── account/
 │   │   └── dashboard.html
@@ -202,6 +184,8 @@ invoice_generator/
 │   │   ├── form_errors.html
 │   │   └── messages.html
 │   ├── invoices/
+│   │   ├── invoice_preview.html
+│   │   ├── invoice_preview_main.html
 │   │   ├── invoice_template.html
 │   │   ├── invoice_template_pdf.html
 │   │   ├── new_invoice_template.html
@@ -215,3 +199,4 @@ invoice_generator/
 └── update_readme.py
 
 ```
+````
