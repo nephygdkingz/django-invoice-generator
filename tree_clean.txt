@@ -15,6 +15,7 @@ invoice_generator/
 │   ├── apps.py
 │   ├── forms.py
 │   ├── migrations/
+│   │   ├── 0001_initial.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── tests.py
@@ -47,12 +48,16 @@ invoice_generator/
 │   ├── apps.py
 │   ├── forms.py
 │   ├── migrations/
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_invoicehistory_company_name.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── tests.py
 │   ├── urls.py
+│   ├── utils.py
 │   └── views.py
 ├── manage.py
+├── media/
 ├── requirements.txt
 ├── static/
 │   └── assets/
@@ -64,6 +69,7 @@ invoice_generator/
 │       ├── images/
 │       └── js/
 │           └── main.js
+├── staticfiles/
 ├── templates/
 │   ├── account/
 │   │   └── dashboard.html
@@ -76,6 +82,8 @@ invoice_generator/
 │   │   ├── form_errors.html
 │   │   └── messages.html
 │   ├── invoices/
+│   │   ├── invoice_preview.html
+│   │   ├── invoice_preview_main.html
 │   │   ├── invoice_template.html
 │   │   ├── invoice_template_pdf.html
 │   │   ├── new_invoice_template.html
