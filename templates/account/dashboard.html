@@ -33,9 +33,11 @@
                 <td>${{ inv.total_due }}</td>
                 <td>{{ inv.issue_date }}</td>
                 {% if inv.pdf_file %}
-                    <td>
-                        <a href="{{ inv.pdf_file.url }}" class="btn btn-sm btn-primary">View Invoice</a>
-                    </td>
+                    {% if request.user.userprofile.is_paid %}
+                        <td>
+                            <a href="{{ inv.pdf_file.url }}" class="btn btn-sm btn-primary">View Invoice</a>
+                        </td>
+                    {% endif %}
                     <td>
                         <a href="{% url 'account:download_invoice' invoice_id=inv.id %}" class="btn btn-sm btn-info text-white">Download</a>
                     </td>

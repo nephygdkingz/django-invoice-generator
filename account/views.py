@@ -53,6 +53,12 @@ def dashboard_view(request):
 
 @login_required
 def download_saved_invoice_view(request, invoice_id):
+    if not request.user.userprofile.is_paid:
+        invoice_count = InvoiceHistory.objects.filter(user=request.user).count()
+        if invoice_count >= 4:
+            messages.error(request, "Free users are limited to 4 invoices. Upgrade to Pro to generate more.")
+            return redirect('invoices:upgrade')
+
     invoice = get_object_or_404(InvoiceHistory, id=invoice_id, user=request.user)
 
     if not invoice.pdf_file:

@@ -21,7 +21,8 @@ def upload_invoice_view(request):
         invoice_form = InvoiceForm(request.POST, request.FILES)
 
         if form.is_valid() and invoice_form.is_valid():
-            uploaded_file = request.FILES['file']
+            # uploaded_file = request.FILES['file']
+            uploaded_file = request.FILES.get('file')
 
             try:
                 if uploaded_file.name.endswith('.csv'):
@@ -50,7 +51,8 @@ def upload_invoice_view(request):
             }
 
             # ✅ Save logo separately and store path in session
-            logo_file = request.FILES['company_logo']
+            # logo_file = request.FILES['company_logo']
+            logo_file = request.FILES.get('company_logo')
             if logo_file:
                 logo_path = save_temp_uploaded_file(logo_file)
                 request.session['company_logo_path'] = logo_path
@@ -115,6 +117,13 @@ def download_invoice_pdf_view(request):
     tax_amount = round((tax_rate / 100) * grand_total, 2)
     total_due = round(grand_total + tax_amount, 2)
 
+    # check if user is subscribed
+    if not request.user.userprofile.is_paid:
+        invoice_count = InvoiceHistory.objects.filter(user=request.user).count()
+        if invoice_count >= 4:
+            messages.error(request, "Free users are limited to 4 invoices. Upgrade to Pro to generate more.")
+            return redirect('invoices:upgrade')
+
     # Get logo URL from stored path
     logo_path = request.session.get('company_logo_path')
     logo_url = None
@@ -149,7 +158,16 @@ def download_invoice_pdf_view(request):
     pdf_file = ContentFile(pdf)
     invoice.pdf_file.save(pdf_filename, pdf_file, save=True)
 
+    # Clear the used session data
+    keys_to_clear = ['invoice_data', 'grand_total', 'invoice_info', 'invoice_number', 'company_logo_path']
+    for key in keys_to_clear:
+        request.session.pop(key, None)
+
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
     return response
+
+@login_required
+def upgrade_view(request):
+    return render(request, 'invoices/upgrade.html')
     
