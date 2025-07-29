@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from datetime import date
 
 from .forms import UploadInvoiceForm, InvoiceForm
-from .utils import generate_invoice_number, save_temp_uploaded_file
+from .utils import generate_invoice_number, save_temp_uploaded_file, load_temp_uploaded_file
 
 
 @login_required
@@ -47,7 +47,7 @@ def upload_invoice_view(request):
             }
 
             # ✅ Save logo separately and store path in session
-            logo_file = request.FILES.get('company_logo')
+            logo_file = request.FILES['company_logo']
             if logo_file:
                 logo_path = save_temp_uploaded_file(logo_file)
                 request.session['company_logo_path'] = logo_path
@@ -72,13 +72,39 @@ def preview_invoice_view(request):
     grand_total = request.session.get('grand_total', 0)
     invoice_info = request.session.get('invoice_info', {})
     invoice_number = request.session.get('invoice_number', generate_invoice_number())
+
     if not data:
         return redirect('invoices:upload')
-    return render(request, 'invoices/preview.html', {
+
+    # Calculate totals
+    tax_rate = 10  # percent
+    tax_amount = round((tax_rate / 100) * grand_total, 2)
+    total_due = round(grand_total + tax_amount, 2)
+
+    # Get logo URL from stored path
+    logo_path = request.session.get('company_logo_path')
+    print(f"Logo path: {logo_path}")  # Debugging line
+    logo_url = None
+    if logo_path:
+        from django.conf import settings
+        logo_url = settings.MEDIA_URL + logo_path  # e.g., /media/tmp/logo.png
+        print(f"Logo URL: {logo_url}")  # Debugging line
+
+    return render(request, 'invoices/invoice_preview1.html', {
         'data': data,
+        'total_due': total_due,
         'grand_total': round(grand_total, 2),
-        'invoice_info': invoice_info
+        'invoice_info': invoice_info,
+        'tax_rate': tax_rate,
+        'tax_amount': tax_amount,
+        'invoice_number': invoice_number,
+        'logo_url': logo_url,  # ✅ pass to template
     })
+    # return render(request, 'invoices/preview.html', {
+    #     'data': data,
+    #     'grand_total': round(grand_total, 2),
+    #     'invoice_info': invoice_info
+    # })
 
 
 @login_required
