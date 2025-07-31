@@ -29,7 +29,7 @@ Each step of the project is tracked in a Git branch. You can follow along step-b
 ## 📚 Tutorial Branches
 
 | Step   | Branch Name            | Description                                          |
-| ------ | ---------------------- | ---------------------------------------------------- |
+|--------|------------------------|------------------------------------------------------|
 | Step 1 | `step-1-project-setup` | Setup Django project and virtual environment         |
 | Step 2 | `step-2-user-auth`     | Add login, register, and dashboard views             |
 | Step 3 | `step-3-upload-csv`    | Upload and parse CSV/Excel files                     |
@@ -43,7 +43,7 @@ Each step of the project is tracked in a Git branch. You can follow along step-b
 ## 📦 Tech Stack
 
 | Layer        | Tools                                              |
-| ------------ | -------------------------------------------------- |
+|--------------|----------------------------------------------------|
 | **Backend**  | Django                                             |
 | **Frontend** | HTML/CSS, Bootstrap                                |
 | **PDF**      | WeasyPrint (in Docker), xhtml2pdf (local fallback) |
@@ -109,7 +109,7 @@ docker-compose down
 4. Add the following **Environment Variables**:
 
 | Variable        | Description                                            |
-| --------------- | ------------------------------------------------------ |
+|-----------------|--------------------------------------------------------|
 | `DATABASE_URL`  | Your PostgreSQL connection string (Render or Supabase) |
 | `SECRET_KEY`    | A long, random Django secret key                       |
 | `DEBUG`         | `False`                                                |

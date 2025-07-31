@@ -61,11 +61,20 @@
                         <h2 class="fw-bold title">INVOICE</h2>
                         <small class="company_info mb-0"><strong>#{{invoice_number}}</strong><br></small>
                         <hr class="mt-0">
+                        {% if request.user.userprofile.is_paid %}
                         <small class="d-block company_info ">
                             {{ invoice_info.company_name }}<br />
                             {{ invoice_info.company_address|linebreaksbr }}<br />
                             Email: {{ invoice_info.company_email }}
                         </small>
+                        {% else %}
+                        <small class="d-block company_info ">
+                            Your Company Name<br />
+                            Your Company Address<br />
+                            Email: Your Company Email<br />
+                            <strong>Upgrade to Pro for more features!</strong>
+                            <a href="{% url 'invoices:upgrade' %}">Upgrade</a>
+                        {% endif %}
                         </div>
                     </div>
 

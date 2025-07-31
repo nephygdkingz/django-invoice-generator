@@ -87,11 +87,16 @@ def preview_invoice_view(request):
     tax_amount = round((tax_rate / 100) * grand_total, 2)
     total_due = round(grand_total + tax_amount, 2)
 
+    # Check if user is paid
+    is_paid = request.user.userprofile.is_paid
+
     # Get logo URL from stored path
     logo_path = request.session.get('company_logo_path')
     logo_url = None
-    if logo_path:
-        logo_url = settings.MEDIA_URL + logo_path  # e.g., /media/tmp/logo.png
+
+    # Only use session-stored logo path if the user is paid
+    if is_paid and logo_path:
+        logo_url = settings.MEDIA_URL + logo_path 
 
     return render(request, 'invoices/invoice_preview_main.html', {
         'data': data,
@@ -101,7 +106,7 @@ def preview_invoice_view(request):
         'tax_rate': tax_rate,
         'tax_amount': tax_amount,
         'invoice_number': invoice_number,
-        'logo_url': logo_url,  # ✅ pass to template
+        'logo_url': logo_url,
     })
 
 @login_required
@@ -118,8 +123,10 @@ def download_invoice_pdf_view(request):
     tax_amount = round((tax_rate / 100) * grand_total, 2)
     total_due = round(grand_total + tax_amount, 2)
 
+    is_paid = request.user.userprofile.is_paid
+
     # check if user is subscribed
-    if not request.user.userprofile.is_paid:
+    if not is_paid:
         invoice_count = InvoiceHistory.objects.filter(user=request.user).count()
         if invoice_count >= 4:
             messages.error(request, "Free users are limited to 4 invoices. Upgrade to Pro to generate more.")
@@ -128,7 +135,8 @@ def download_invoice_pdf_view(request):
     # Get logo URL from stored path
     logo_path = request.session.get('company_logo_path')
     logo_url = None
-    if logo_path:
+
+    if is_paid and logo_path:
         logo_url = request.build_absolute_uri(settings.MEDIA_URL + logo_path)
 
     html_string = render_to_string('invoices/invoice_template_pdf.html', {

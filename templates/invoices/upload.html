@@ -12,8 +12,8 @@
         <hr>
         <form method="post"  class="spinner-form" enctype="multipart/form-data">
           {% csrf_token %}
-          <h5 class="text-center">Upload File</h5>
-          <hr>
+          <!-- <h5 class="text-center">Upload File</h5>
+          <hr> -->
           {% for field in form %}
             <div class="mb-3">
               {{ field.label_tag }}
